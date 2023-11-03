@@ -226,3 +226,33 @@ func (r usuarios) BuscarSeguindo(usuarioID uint64) ([]model.Usuario, error) {
 	}
 	return usuarios, erro
 }
+
+func (r usuarios) BuscarSenha(usuarioID uint64) (string, error) {
+	linha, erro := r.db.Query("select senha from usuarios where id = ?", usuarioID)
+	if erro != nil {
+		return "", erro
+	}
+	defer linha.Close()
+
+	var usuario model.Usuario
+
+	if linha.Next() {
+		if erro = linha.Scan(&usuario.Senha); erro != nil {
+			return "", erro
+		}
+	}
+	return usuario.Senha, nil
+}
+
+func (r usuarios) AtualizarSenha(usuarioID uint64, senha string) error {
+	statement, erro := r.db.Prepare("update usuarios set senha = ? where id = ?")
+	if erro != nil {
+		return erro
+	}
+	defer statement.Close()
+
+	if _, erro = statement.Exec(senha, usuarioID); erro != nil {
+		return erro
+	}
+	return nil
+}
