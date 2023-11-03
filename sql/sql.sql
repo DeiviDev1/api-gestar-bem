@@ -28,6 +28,7 @@ CREATE TABLE seguidores(
 )ENGINE=INNODB;
 
 
+DROP table usuarios;
 /*select * from usuarios;
 
 DESC usuarios;

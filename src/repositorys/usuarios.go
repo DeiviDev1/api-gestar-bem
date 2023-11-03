@@ -167,3 +167,32 @@ func (r usuarios) PararDeSeguir(usuarioID, seguidorID uint64) error {
 	}
 	return nil
 }
+
+func (r usuarios) BuscarSeguidores(usuarioID uint64) ([]model.Usuario, error) {
+	linhas, erro := r.db.Query(`
+      select u.id, u.nome, u.nick, u.email, u.criadoem
+      from usuarios u inner join seguidores s on u.id = s.seguidor_id
+      where s.usuario_id = ?
+	`, usuarioID)
+
+	if erro != nil {
+		return nil, erro
+	}
+	defer linhas.Close()
+
+	var usuarios []model.Usuario
+	for linhas.Next() {
+		var usuario model.Usuario
+		if erro = linhas.Scan(
+			&usuario.ID,
+			&usuario.Nome,
+			&usuario.Nick,
+			&usuario.Email,
+			&usuario.CriadoEm,
+		); erro != nil {
+			return nil, erro
+		}
+		usuarios = append(usuarios, usuario)
+	}
+	return usuarios, nil
+}
