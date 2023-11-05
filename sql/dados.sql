@@ -9,3 +9,10 @@ values
     (1,2),
     (3,1),
     (1,3);
+
+INSERT into publicacao (titulo, conteudo, autor_id)
+values
+    ('Publicação do User 1', 'Conteúdo da publicação do User 1', 2),
+    ('Publicação do User 2', 'Conteúdo da publicação do User 2', 2),
+    ('Publicação do User 3', 'Conteúdo da publicação do User 3', 3);
+
