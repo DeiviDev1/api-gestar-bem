@@ -7,8 +7,10 @@ import (
 	"api-gestar-bem/src/repositorys"
 	"api-gestar-bem/src/respostas"
 	"encoding/json"
+	"github.com/gorilla/mux"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 // CriarPublicacao cria uma nova publicacao no banco de dados
@@ -33,7 +35,7 @@ func CriarPublicacao(w http.ResponseWriter, r *http.Request) {
 	publicacao.AutorID = usuarioID
 
 	if erro = publicacao.Preparar(); erro != nil {
-		respostas.Erro(w, http.StatusBadRequest, erro)
+		respostas.Erro(w, http.StatusInternalServerError, erro)
 		return
 	}
 
@@ -62,6 +64,29 @@ func BuscarPublicacoes(w http.ResponseWriter, r *http.Request) {
 
 // BuscarPublicacao traz uma unica publicacao do banco de dados
 func BuscarPublicacao(w http.ResponseWriter, r *http.Request) {
+	parametros := mux.Vars(r)
+	publicacaoID, erro := strconv.ParseUint(parametros["publicacaoId"], 10, 64)
+	if erro != nil {
+		respostas.Erro(w, http.StatusBadRequest, erro)
+		return
+	}
+
+	db, erro := banco.Conectar()
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+	defer db.Close()
+
+	repository := repositorys.NewRepositoryPublicacoes(db)
+
+	publicacao, erro := repository.BuscarPorID(publicacaoID)
+	if erro != nil {
+		respostas.Erro(w, http.StatusInternalServerError, erro)
+		return
+	}
+
+	respostas.JSON(w, http.StatusOK, publicacao)
 
 }
 

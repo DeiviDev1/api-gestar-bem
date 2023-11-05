@@ -32,3 +32,31 @@ func (r Publicacoes) Criar(publicacao model.Publicacao) (uint64, error) {
 	return uint64(ultimoIDInserido), nil
 
 }
+
+func (r Publicacoes) BuscarPorID(publicacaoID uint64) (model.Publicacao, error) {
+	linha, erro := r.db.Query(`
+		select p.*, u.nick from 
+	    publicacao p inner join usuarios u 
+	    on u.id = p.autor_id where p.id = ?`,
+		publicacaoID)
+	if erro != nil {
+		return model.Publicacao{}, erro
+	}
+	defer linha.Close()
+
+	var publicacao model.Publicacao
+	if linha.Next() {
+		if erro = linha.Scan(
+			&publicacao.ID,
+			&publicacao.Titulo,
+			&publicacao.Conteudo,
+			&publicacao.AutorID,
+			&publicacao.Curtidas,
+			&publicacao.CriadaEm,
+			&publicacao.AutorNick,
+		); erro != nil {
+			return model.Publicacao{}, erro
+		}
+	}
+	return publicacao, nil
+}

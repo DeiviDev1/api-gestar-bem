@@ -29,7 +29,7 @@ func (p *Publicacao) validar() error {
 		return errors.New("O titulo é obrigatório e não pode estar em branco")
 	}
 	if p.Conteudo == "" {
-		return errors.New("O conteúdo é obrigatório e não pode estar em branco")
+		return errors.New("O conteudo é obrigatório e não pode estar em branco")
 	}
 	return nil
 }
@@ -37,4 +37,5 @@ func (p *Publicacao) validar() error {
 func (p *Publicacao) formatar() {
 	p.Titulo = strings.TrimSpace(p.Titulo)
 	p.Conteudo = strings.TrimSpace(p.Conteudo)
+
 }
