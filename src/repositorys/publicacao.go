@@ -150,3 +150,32 @@ func (r Publicacoes) BuscarPorUsuario(usuarioID uint64) ([]model.Publicacao, err
 	}
 	return publicacoes, erro
 }
+
+func (r Publicacoes) Curtir(publicacaoID uint64) error {
+	statament, erro := r.db.Prepare("update publicacao set curtidas = curtidas + 1 where id = ?")
+	if erro != nil {
+		return erro
+	}
+	defer statament.Close()
+
+	if _, erro = statament.Exec(publicacaoID); erro != nil {
+		return erro
+	}
+	return nil
+}
+
+func (r Publicacoes) Descurtir(publicacaoID uint64) error {
+	statament, erro := r.db.Prepare(`
+	    update publicacao set curtidas =
+		case when curtidas > 0 then curtidas - 1
+	    else 0 end where id = ?`)
+
+	if erro != nil {
+		return erro
+	}
+
+	if _, erro = statament.Exec(publicacaoID); erro != nil {
+		return erro
+	}
+	return nil
+}
