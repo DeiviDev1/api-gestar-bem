@@ -92,3 +92,16 @@ func (r Publicacoes) Buscar(usuarioID uint64) ([]model.Publicacao, error) {
 	}
 	return publicacoes, nil
 }
+
+func (r Publicacoes) Atualizar(publicacaoID uint64, publicacao model.Publicacao) error {
+	statament, erro := r.db.Prepare("update publicacao set titulo = ?, conteudo = ? where id = ?")
+	if erro != nil {
+		return erro
+	}
+	defer statament.Close()
+
+	if _, erro = statament.Exec(publicacao.Titulo, publicacao.Conteudo, publicacaoID); erro != nil {
+		return erro
+	}
+	return nil
+}
