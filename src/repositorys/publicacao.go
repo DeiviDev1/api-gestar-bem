@@ -105,3 +105,16 @@ func (r Publicacoes) Atualizar(publicacaoID uint64, publicacao model.Publicacao)
 	}
 	return nil
 }
+
+func (r Publicacoes) Deletar(publicacaoID uint64) error {
+	statament, erro := r.db.Prepare("delete from publicacao where id = ?")
+	if erro != nil {
+		return erro
+	}
+	defer statament.Close()
+
+	if _, erro = statament.Exec(publicacaoID); erro != nil {
+		return erro
+	}
+	return nil
+}
